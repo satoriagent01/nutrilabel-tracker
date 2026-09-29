@@ -1,0 +1,226 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>NutriLabel Tracker</title>
+  <link rel="stylesheet" href="styles.css">
+</head>
+<body>
+  <header>
+    <h1>🥗 NutriLabel Tracker</h1>
+    <nav id="main-nav">
+      <button data-screen="dashboard" class="nav-btn active" aria-label="Inicio">Inicio</button>
+      <button data-screen="scan" class="nav-btn" aria-label="Escanear">Escanear</button>
+      <button data-screen="library" class="nav-btn" aria-label="Productos">Productos</button>
+      <button data-screen="planner" class="nav-btn" aria-label="Planificador">Planificador</button>
+      <button data-screen="trackers" class="nav-btn" aria-label="Trackers">Trackers</button>
+      <button data-screen="settings" class="nav-btn" aria-label="Ajustes">Ajustes</button>
+    </nav>
+  </header>
+
+  <main id="app">
+    <!-- Dashboard -->
+    <section id="screen-dashboard" class="screen active">
+      <h2>Resumen de hoy</h2>
+      <div id="today-totals" class="totals-grid"></div>
+      <div id="tracker-status" class="tracker-status"></div>
+      <p id="no-meals-msg" class="empty-msg">No hay comidas registradas hoy. ¡Agrega una!</p>
+    </section>
+
+    <!-- Scan / Upload -->
+    <section id="screen-scan" class="screen">
+      <h2>Escanear etiqueta</h2>
+      <div id="ocr-status" class="ocr-status"></div>
+      <div id="upload-area">
+        <input type="file" id="photo-input" accept="image/*" capture="environment" aria-label="Tomar o subir foto">
+        <label for="photo-input" class="upload-btn">📷 Tomar foto / Subir</label>
+      </div>
+      <div id="photo-preview" class="photo-preview hidden">
+        <img id="preview-img" src="" alt="Vista previa de la foto">
+      </div>
+      <div id="review-section" class="review-section hidden">
+        <h3>Revisar valores extraídos</h3>
+        <div id="review-fields"></div>
+        <div class="review-actions">
+          <button id="btn-save-product" class="btn-primary">Guardar producto</button>
+          <button id="btn-cancel-review" class="btn-secondary">Cancelar</button>
+        </div>
+      </div>
+      <div id="manual-entry" class="manual-entry">
+        <h3>O ingresa manualmente</h3>
+        <form id="manual-form">
+          <label for="manual-name">Nombre del producto</label>
+          <input type="text" id="manual-name" required>
+          <label for="manual-base">Base (100 g o 100 ml)</label>
+          <select id="manual-base">
+            <option value="g">100 g</option>
+            <option value="ml">100 ml</option>
+          </select>
+          <fieldset>
+            <legend>Nutrientes (por 100 g/ml)</legend>
+            <label for="m-energy-kcal">Energía (kcal)</label>
+            <input type="number" step="any" id="m-energy-kcal" placeholder="kcal">
+            <label for="m-energy-kj">Energía (kJ)</label>
+            <input type="number" step="any" id="m-energy-kj" placeholder="kJ">
+            <label for="m-fat">Grasa (g)</label>
+            <input type="number" step="any" id="m-fat" placeholder="g">
+            <label for="m-saturated-fat">Grasa saturada (g)</label>
+            <input type="number" step="any" id="m-saturated-fat" placeholder="g">
+            <label for="m-carbs">Carbohidratos (g)</label>
+            <input type="number" step="any" id="m-carbs" placeholder="g">
+            <label for="m-sugars">Azúcares (g)</label>
+            <input type="number" step="any" id="m-sugars" placeholder="g">
+            <label for="m-fiber">Fibra (g)</label>
+            <input type="number" step="any" id="m-fiber" placeholder="g">
+            <label for="m-protein">Proteína (g)</label>
+            <input type="number" step="any" id="m-protein" placeholder="g">
+            <label for="m-salt">Sal (g)</label>
+            <input type="number" step="any" id="m-salt" placeholder="g">
+          </fieldset>
+          <button type="submit" class="btn-primary">Guardar producto</button>
+        </form>
+      </div>
+    </section>
+
+    <!-- Product Library -->
+    <section id="screen-library" class="screen">
+      <h2>Biblioteca de productos</h2>
+      <div id="product-list" class="product-list"></div>
+      <p id="no-products-msg" class="empty-msg">No hay productos guardados.</p>
+    </section>
+
+    <!-- Meal Planner -->
+    <section id="screen-planner" class="screen">
+      <h2>Planificador de comidas</h2>
+      <div id="meal-form-area">
+        <label for="meal-name">Nombre de la comida</label>
+        <input type="text" id="meal-name" placeholder="Ej: Almuerzo">
+        <label for="meal-date">Fecha</label>
+        <input type="date" id="meal-date">
+        <div id="meal-items"></div>
+        <button id="btn-add-item" class="btn-secondary">+ Agregar producto</button>
+        <div id="meal-totals" class="meal-totals"></div>
+        <button id="btn-save-meal" class="btn-primary">Guardar comida</button>
+      </div>
+      <div id="saved-meals"></div>
+    </section>
+
+    <!-- Trackers -->
+    <section id="screen-trackers" class="screen">
+      <h2>Trackers personalizados</h2>
+      <div id="tracker-list"></div>
+      <button id="btn-add-tracker" class="btn-secondary">+ Nuevo tracker</button>
+      <div id="tracker-form-area" class="hidden">
+        <h3>Nuevo tracker</h3>
+        <label for="tracker-name">Nombre</label>
+        <input type="text" id="tracker-name" placeholder="Ej: Sodio">
+        <label for="tracker-nutrient">Nutriente</label>
+        <select id="tracker-nutrient">
+          <option value="energy_kcal">Energía (kcal)</option>
+          <option value="energy_kj">Energía (kJ)</option>
+          <option value="fat">Grasa (g)</option>
+          <option value="saturated_fat">Grasa saturada (g)</option>
+          <option value="carbs">Carbohidratos (g)</option>
+          <option value="sugars">Azúcares (g)</option>
+          <option value="fiber">Fibra (g)</option>
+          <option value="protein">Proteína (g)</option>
+          <option value="salt">Sal (g)</option>
+          <option value="sodium">Sodio (g)</option>
+        </select>
+        <label for="tracker-unit">Unidad</label>
+        <input type="text" id="tracker-unit" value="g" placeholder="g, mg, kcal...">
+        <label for="tracker-type">Tipo</label>
+        <select id="tracker-type">
+          <option value="max">Máximo</option>
+          <option value="min">Mínimo</option>
+        </select>
+        <label for="tracker-goal">Meta diaria</label>
+        <input type="number" step="any" id="tracker-goal" placeholder="Meta">
+        <button id="btn-save-tracker" class="btn-primary">Guardar</button>
+        <button id="btn-cancel-tracker" class="btn-secondary">Cancelar</button>
+      </div>
+    </section>
+
+    <!-- Settings -->
+    <section id="screen-settings" class="screen">
+      <h2>Ajustes</h2>
+      <div class="settings-section">
+        <h3>Datos</h3>
+        <button id="btn-export" class="btn-secondary">Exportar JSON</button>
+        <button id="btn-import" class="btn-secondary">Importar JSON</button>
+        <input type="file" id="import-input" accept=".json" class="hidden">
+      </div>
+      <div class="settings-section">
+        <h3>OCR</h3>
+        <p id="ocr-config-status">OCR no configurado. La app funciona con entrada manual.</p>
+      </div>
+      <div class="settings-section">
+        <h3>Acerca de</h3>
+        <p>NutriLabel Tracker — gratis, sin anuncios, sin cuentas.</p>
+        <p>Todos los datos se guardan en tu dispositivo.</p>
+      </div>
+    </section>
+  </main>
+
+  <!-- Modal for editing product -->
+  <dialog id="edit-product-dialog">
+    <h3>Editar producto</h3>
+    <form id="edit-product-form">
+      <input type="hidden" id="edit-product-id">
+      <label for="edit-name">Nombre</label>
+      <input type="text" id="edit-name" required>
+      <label for="edit-base">Base</label>
+      <select id="edit-base">
+        <option value="g">100 g</option>
+        <option value="ml">100 ml</option>
+      </select>
+      <fieldset>
+        <legend>Nutrientes (por 100 g/ml)</legend>
+        <label for="edit-energy-kcal">Energía (kcal)</label>
+        <input type="number" step="any" id="edit-energy-kcal">
+        <label for="edit-energy-kj">Energía (kJ)</label>
+        <input type="number" step="any" id="edit-energy-kj">
+        <label for="edit-fat">Grasa (g)</label>
+        <input type="number" step="any" id="edit-fat">
+        <label for="edit-saturated-fat">Grasa saturada (g)</label>
+        <input type="number" step="any" id="edit-saturated-fat">
+        <label for="edit-carbs">Carbohidratos (g)</label>
+        <input type="number" step="any" id="edit-carbs">
+        <label for="edit-sugars">Azúcares (g)</label>
+        <input type="number" step="any" id="edit-sugars">
+        <label for="edit-fiber">Fibra (g)</label>
+        <input type="number" step="any" id="edit-fiber">
+        <label for="edit-protein">Proteína (g)</label>
+        <input type="number" step="any" id="edit-protein">
+        <label for="edit-salt">Sal (g)</label>
+        <input type="number" step="any" id="edit-salt">
+      </fieldset>
+      <button type="submit" class="btn-primary">Actualizar</button>
+      <button type="button" id="btn-close-edit" class="btn-secondary">Cancelar</button>
+    </form>
+  </dialog>
+
+  <!-- Modal for adding meal item -->
+  <dialog id="add-item-dialog">
+    <h3>Agregar producto a la comida</h3>
+    <form id="add-item-form">
+      <label for="item-product">Producto</label>
+      <select id="item-product"></select>
+      <label for="item-amount">Cantidad</label>
+      <input type="number" step="any" id="item-amount" required>
+      <label for="item-unit">Unidad</label>
+      <select id="item-unit">
+        <option value="g">g</option>
+        <option value="ml">ml</option>
+      </select>
+      <label for="item-density">Densidad (opcional, g/ml)</label>
+      <input type="number" step="any" id="item-density" placeholder="Ej: 1.0">
+      <button type="submit" class="btn-primary">Agregar</button>
+      <button type="button" id="btn-close-item" class="btn-secondary">Cancelar</button>
+    </form>
+  </dialog>
+
+  <script type="module" src="app.js"></script>
+</body>
+</html>
