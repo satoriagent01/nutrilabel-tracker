@@ -1,0 +1,12 @@
+{
+  "name": "nutrilabel-tracker",
+  "version": "1.0.0",
+  "description": "Nutritional label tracker - free, no ads, custom nutrient tracking",
+  "type": "module",
+  "scripts": {
+    "test": "node --test test/"
+  },
+  "keywords": [],
+  "author": "",
+  "license": "MIT"
+}
