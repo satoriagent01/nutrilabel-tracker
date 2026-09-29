@@ -4,7 +4,7 @@
   "description": "Nutritional label tracker - free, no ads, custom nutrient tracking",
   "type": "module",
   "scripts": {
-    "test": "node --test test/"
+    "test": "node --test"
   },
   "keywords": [],
   "author": "",
